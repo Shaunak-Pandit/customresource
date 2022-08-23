@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  CustomResourceFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Handler: app.handler
+      Role: arn:aws:iam::803730564122:role/LambdaCustomRole
+      Code:
+        ZipFile: !Sub |
+            from datetime import datetime
+            def handler(event,context):
+              dt = datetime.now()
+              ts = datetime.timestamp(dt)
+              print("Date and time is:", dt)
+              print("Timestamp is:", ts)
+
+      Runtime: python3
+  CustomFunction: 
+   Type: Custom::LambdaCallout
+   Properties:
+    ServiceToken: !GetAtt CustomResourceFunction.Arn
+Outputs:
+   Results:
+    Description: Create custom resource
+    Value: !GetAtt CustomFunction.ts
